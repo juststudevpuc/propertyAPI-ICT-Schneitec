@@ -57,7 +57,9 @@ Route::prefix('v1')->group(function () {
 
         Route::apiResource('properties', AdminPropertyController::class);
         Route::apiResource('projects', AdminProjectController::class);
-        Route::apiResource('news', AdminNewsController::class);
+        Route::apiResource('news', AdminNewsController::class)->parameters([
+            'news' => 'news_article',
+        ]);
 
         // NEW: ADMIN CRUD ROUTES
         Route::apiResource('offers', OfferController::class);

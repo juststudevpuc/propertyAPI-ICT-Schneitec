@@ -4,26 +4,47 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class UpdateNewsArticleRequest extends FormRequest
 {
-    public function authorize(): bool { return $this->user() && $this->user()->is_active; }
-
-    protected function prepareForValidation() {
-        if ($this->title) $this->merge(['slug' => Str::slug($this->title)]);
+    public function authorize(): bool
+    {
+        return $this->user() && $this->user()->is_active;
     }
 
-    public function rules(): array {
-        $newsId = $this->route('news_article')->id ?? $this->route('news_article');
+    protected function prepareForValidation(): void
+    {
+        if ($this->filled('title')) {
+            $this->merge([
+                'slug' => Str::slug($this->input('title')),
+            ]);
+        }
+
+        if ($this->has('image_url') && trim((string) $this->input('image_url')) === '') {
+            $this->merge(['image_url' => null]);
+        }
+    }
+
+    public function rules(): array
+    {
+        $routeParam = $this->route('news_article') ?? $this->route('news');
+        $newsId = is_object($routeParam) ? $routeParam->id : $routeParam;
+
         return [
             'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'slug' => ['sometimes', 'required', 'string', 'unique:news_articles,slug,' . $newsId],
+            'slug' => [
+                'sometimes',
+                'required',
+                'string',
+                Rule::unique('news_articles', 'slug')->ignore($newsId),
+            ],
             'category' => ['sometimes', 'required', 'string', 'max:255'],
             'excerpt' => ['nullable', 'string', 'max:1000'],
             'content' => ['nullable', 'string'],
-            'image_url' => ['nullable', 'string', 'url'],
+            'image_url' => ['nullable', 'string', 'max:500'],
             'date_string' => ['nullable', 'string', 'max:255'],
-            'is_published' => ['boolean'],
+            'is_published' => ['sometimes', 'boolean'],
         ];
     }
 }

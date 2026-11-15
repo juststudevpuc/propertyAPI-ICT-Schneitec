@@ -11,12 +11,14 @@ class NewsArticleResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'date' => $this->date_string,
             'category' => $this->category,
             'title' => $this->title,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
             'image' => $this->image_url,
+            'coverImage' => $this->image_url,
         ];
     }
 }
