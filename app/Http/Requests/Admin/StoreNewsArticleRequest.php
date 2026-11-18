@@ -7,13 +7,18 @@ use Illuminate\Support\Str;
 
 class StoreNewsArticleRequest extends FormRequest
 {
-    public function authorize(): bool { return $this->user() && $this->user()->is_active; }
+    public function authorize(): bool
+    {
+        return $this->user() && $this->user()->is_active;
+    }
 
-    protected function prepareForValidation() {
+    protected function prepareForValidation()
+    {
         if ($this->title) $this->merge(['slug' => Str::slug($this->title)]);
     }
 
-    public function rules(): array {
+    public function rules(): array
+    {
         return [
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'unique:news_articles,slug'],
@@ -23,6 +28,10 @@ class StoreNewsArticleRequest extends FormRequest
             'image_url' => ['nullable', 'string', 'url'],
             'date_string' => ['nullable', 'string', 'max:255'],
             'is_published' => ['boolean'],
+            'image_caption' => ['nullable', 'string', 'max:500'],
+            'sub_images' => ['nullable', 'array', 'max:12'],
+            'sub_images.*.url' => ['required', 'string', 'max:500'],
+            'sub_images.*.caption' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

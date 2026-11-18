@@ -26,6 +26,12 @@ class SiteSettingController extends Controller
             'facebook_url' => 'nullable|url',
             'linkedin_url' => 'nullable|url',
             'telegram_url' => 'nullable|url',
+            'services_hero_eyebrow' => 'nullable|string',
+            'services_hero_title' => 'nullable|string',
+            'services_hero_description' => 'nullable|string',
+            'services_hero_image' => 'nullable|string',
+            'services_care_banner_image' => 'nullable|string',
+            'services_tags' => 'nullable|string',
         ]);
 
         foreach ($data as $key => $value) {

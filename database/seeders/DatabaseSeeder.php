@@ -24,5 +24,11 @@ class DatabaseSeeder extends Seeder
                 'is_active' => true,
             ]
         );
+
+        $this->call([
+            ServiceSeeder::class,
+            ProjectSeeder::class,
+            NewsSeeder::class,
+        ]);
     }
 }

@@ -19,6 +19,8 @@ class NewsArticleResource extends JsonResource
             'content' => $this->content,
             'image' => $this->image_url,
             'coverImage' => $this->image_url,
+            'image_caption' => $this->image_caption,
+            'sub_images' => $this->sub_images ?? [],
         ];
     }
 }

@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
 
     // PUBLIC ROUTES (No token required)
+    Route::get('/services', [\App\Http\Controllers\Api\Public\ServiceController::class, 'index']);
     Route::get('/properties', [PropertyController::class, 'index']);
     Route::get('/properties/{id}', [PropertyController::class, 'show']);
     Route::get('/projects', [ProjectController::class, 'index']);
@@ -41,6 +42,29 @@ Route::prefix('v1')->group(function () {
     // PUBLIC FORM SUBMISSIONS
     Route::post('/feedback', [GuestFeedbackController::class, 'store']);
     Route::post('/inquiries/booking', [BookingInquiryController::class, 'store']);
+    Route::post('/inquiries', function (\Illuminate\Http\Request $request) {
+        $validated = $request->validate([
+            'name'    => 'nullable|string|max:255',
+            'email'   => 'required|email|max:255',
+            'phone'   => 'nullable|string|max:100',
+            'message' => 'nullable|string|max:5000',
+            'project' => 'nullable|string|max:255',
+            'slug'    => 'nullable|string|max:255',
+            'type'    => 'nullable|string|max:50',
+        ]);
+
+        \App\Models\GuestFeedback::create([
+            'hotel_visited' => $validated['project'] ?? $validated['slug'] ?? 'Project Inquiry',
+            'name'          => $validated['name'] ?? 'Inquiry Request',
+            'email'         => $validated['email'],
+            'message'       => trim(($validated['message'] ?? '') . (isset($validated['phone']) ? " | Phone: {$validated['phone']}" : '') . (isset($validated['type']) ? " | Type: {$validated['type']}" : '')),
+        ]);
+
+        return response()->json([
+            'message' => 'Inquiry received. Our residential advisory directors will reach out shortly.',
+            'data'    => $validated,
+        ], 201);
+    });
 
     // ADMIN ROUTES
     Route::post('/admin/login', [AuthController::class, 'login']);
@@ -62,6 +86,7 @@ Route::prefix('v1')->group(function () {
         ]);
 
         // NEW: ADMIN CRUD ROUTES
+        Route::apiResource('services', \App\Http\Controllers\Api\Admin\ServiceController::class);
         Route::apiResource('offers', OfferController::class);
         Route::apiResource('experiences', ExperienceController::class);
         Route::apiResource('jobs', JobOpeningController::class);

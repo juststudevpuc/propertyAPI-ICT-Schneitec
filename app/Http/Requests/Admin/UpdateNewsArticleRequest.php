@@ -45,6 +45,10 @@ class UpdateNewsArticleRequest extends FormRequest
             'image_url' => ['nullable', 'string', 'max:500'],
             'date_string' => ['nullable', 'string', 'max:255'],
             'is_published' => ['sometimes', 'boolean'],
+            'image_caption' => ['nullable', 'string', 'max:500'],
+            'sub_images' => ['nullable', 'array', 'max:12'],
+            'sub_images.*.url' => ['required', 'string', 'max:500'],
+            'sub_images.*.caption' => ['nullable', 'string', 'max:500'],
         ];
     }
 }
